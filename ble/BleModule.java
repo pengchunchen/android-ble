@@ -34,7 +34,7 @@ public class BleModule implements Ble {
     private final int STOP_LESCAN = 0x1;
     public static BluetoothState mState = BluetoothState.UNKNOWN;
 
-    public static final String DATA_SERVICE_UUID = "0000FFF0-0000-1000-8000-00805F9B34FB";     //血压计提供的SERVICE
+    public static final String DATA_SERVICE_UUID = "0000FFF0-0000-1000-8000-00805F9B34FB";     //提供的SERVICE
     public static final String REC_PKG_CHAR_UUID = "0000FFF1-0000-1000-8000-00805F9B34FB";     //接受数据要使用的characteristic的UUID
     public static final String SEND_PKG_CHAR_UUID = "0000FFF1-0000-1000-8000-00805F9B34FB";    //SEND_PKG_CHAR_UUID
     public static final String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";   //设置蓝牙通知的UUID
