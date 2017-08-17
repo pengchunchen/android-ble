@@ -22,6 +22,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     public Jf_BleUtil(Context context) {
         this.mContext = context;
         mBle = new BleModule(this.mContext);
+        mBle.setCharUUID("FFF0","FFF1","FFF1","2902");
     }
 
     /**

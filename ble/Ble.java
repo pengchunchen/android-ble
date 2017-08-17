@@ -6,6 +6,14 @@ package com.weex.sample.extend.ble;
 
 public interface Ble {
     /**
+     * 设置蓝牙的服务号，读特征号，写特征号，通知号
+     * @param serviceID
+     * @param recID
+     * @param sendID
+     * @param notifyID
+     */
+    void setCharUUID(String serviceID,String recID,String sendID,String notifyID);
+    /**
      * 检测手机蓝牙是否打开
      * @return true打开 false调用者自行开启
      */

@@ -34,11 +34,10 @@ public class BleModule implements Ble {
     private final int STOP_LESCAN = 0x1;
     public static BluetoothState mState = BluetoothState.UNKNOWN;
 
-    public static final String DATA_SERVICE_UUID = "0000FFF0-0000-1000-8000-00805F9B34FB";     //提供的SERVICE
-    public static final String REC_PKG_CHAR_UUID = "0000FFF1-0000-1000-8000-00805F9B34FB";     //接受数据要使用的characteristic的UUID
-    public static final String SEND_PKG_CHAR_UUID = "0000FFF1-0000-1000-8000-00805F9B34FB";    //SEND_PKG_CHAR_UUID
-    public static final String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";   //设置蓝牙通知的UUID
-
+    public static String DATA_SERVICE_UUID;     //血压计提供的SERVICE
+    public static String REC_PKG_CHAR_UUID;     //接受数据要使用的characteristic的UUID
+    public static String SEND_PKG_CHAR_UUID;    //SEND_PKG_CHAR_UUID
+    public static String CLIENT_CHARACTERISTIC_CONFIG;   //设置蓝牙通知的UUID
 
     //回调
     //扫描结果
@@ -52,6 +51,14 @@ public class BleModule implements Ble {
         if (mBluetoothManager != null) {
             mBluetoothAdapter = mBluetoothManager.getAdapter();
         }
+    }
+
+    @Override
+    public void setCharUUID(String serviceID, String recID, String sendID, String notifyID) {
+        DATA_SERVICE_UUID = "0000" + serviceID + "-0000-1000-8000-00805F9B34FB";
+        REC_PKG_CHAR_UUID = "0000" + recID + "-0000-1000-8000-00805F9B34FB";
+        SEND_PKG_CHAR_UUID = "0000" + sendID + "-0000-1000-8000-00805F9B34FB";
+        CLIENT_CHARACTERISTIC_CONFIG = "0000" + notifyID + "-0000-1000-8000-00805f9b34fb";
     }
 
     @Override
@@ -291,7 +298,7 @@ public class BleModule implements Ble {
             return false;
         }
 
-        mBluetoothGatt.disconnect(); //不一定触发 onConnectionStateChange
+        mBluetoothGatt.disconnect();
         mBluetoothGatt.close();
         mBluetoothGatt = null;
         return true;
@@ -312,7 +319,6 @@ public class BleModule implements Ble {
         DISCONNECTING,
         DISCONNECTED
     }
-
 
     private byte charToByte(char c) {
         return (byte) "0123456789ABCDEF".indexOf(c);
