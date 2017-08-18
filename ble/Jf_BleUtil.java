@@ -156,24 +156,24 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     public void respose(String code) {
         if (!isReadHistory) {
             String header = code.substring(0, 8);
-            if (header == "11111110") {
+            if (header.equals("11111110")) {
                 String funcCodeString = code.substring(16, 24);
-                if (funcCodeString == "00001001") {
+                if (funcCodeString.equals("00001001")) {
                     String type = code.substring(24, 32);
-                    if (type == "00000001") {
+                    if (type.equals("00000001")) {
                         callback.response(BleCmdType.BleCmd_GetDeviceTimeInterval, bitStringToInt(code.substring(40, 72)));
-                    } else if (type == "00000010") {
+                    } else if (type.equals("00000010")) {
                         callback.response(BleCmdType.BleCmd_GetDeviceSensorCount, bitStringToInt(code.substring(40, 72)));
-                    } else if (type == "00000011") {
+                    } else if (type.equals("00000011")) {
                         callback.response(BleCmdType.BleCmd_GetDeviceTime, bitStringToInt(code.substring(40, 72)));
-                    } else if (type == "00000100") {
+                    } else if (type.equals("00000100")) {
                         callback.response(BleCmdType.BleCmd_GetDeviceBattery, bitStringToInt(code.substring(40, 72)));
-                    } else if (type == "00000111") {
+                    } else if (type.equals("00000111")) {
                         callback.response(BleCmdType.BleCmd_GetDeviceSaveWord, bitStringToInt(code.substring(40, 72)));
                     }
-                } else if (funcCodeString == "00000111") {
+                } else if (funcCodeString.equals("00000111")) {
                     callback.response(mSetBleCmd, 0);
-                } else if (funcCodeString == "00000101") {
+                } else if (funcCodeString.equals("00000101")) {
                     int dataLength = bitStringToInt(code.substring(32, 40));
                     int dataCount = dataLength / 5;
                     List<DeviceData> deviceDataLists = new ArrayList<>();
@@ -189,7 +189,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
         } else {
             historyResultString += code;
             int resultLength = historyResultString.length();
-            if (historyResultString.substring(resultLength - 6 * 8, resultLength - 8) == "1111111000000000000000110000000000000000") {
+            if (historyResultString.substring(resultLength - 6 * 8, resultLength - 8).equals("1111111000000000000000110000000000000000")) {
                 int eachDataLength = (10 + readHistoryCount * 5) * 8;
                 int dataCount = (resultLength - 48) / eachDataLength;
                 DeviceData deviceData;
@@ -197,9 +197,9 @@ public class Jf_BleUtil implements onBleResponseCallBack {
                 for (int i = 0; i < dataCount; i++) {
                     String eachData = historyResultString.substring(i * eachDataLength, (i + 1) * eachDataLength);
                     String headString = eachData.substring(0, 8);
-                    if (headString == "11111110") {
+                    if (headString.equals("11111110")) {
                         String funcCodeString = eachData.substring(16, 24);
-                        if (funcCodeString == "00000011") {
+                        if (funcCodeString.equals("00000011")) {
                             int dataLength = bitStringToInt(eachData.substring(32, 40));
                             int eachdataCount = (dataLength - 4) / 5;
                             deviceData = new DeviceData();

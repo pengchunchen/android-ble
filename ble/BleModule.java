@@ -40,8 +40,6 @@ public class BleModule implements Ble {
     public static String SEND_PKG_CHAR_UUID;    //SEND_PKG_CHAR_UUID
     public static String CLIENT_CHARACTERISTIC_CONFIG;   //设置蓝牙通知的UUID
 
-    private List<BluetoothDevice> devices = new ArrayList<>();//扫描到的蓝牙列表
-
     //回调
     //扫描结果
     private onBleScanResultCallBack scanResultCallBack;
@@ -78,7 +76,6 @@ public class BleModule implements Ble {
     @Override
     public void startScanBle(onBleScanResultCallBack scanResultCallBack) {
         isScan = true;
-        devices.clear();
         this.scanResultCallBack = scanResultCallBack;
         mBluetoothAdapter.startLeScan(mLeScanCallback);
         mState = BluetoothState.SCANNING;
@@ -104,6 +101,7 @@ public class BleModule implements Ble {
         if (isScan) {
             isScan = false;
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            mHandler.removeMessages(STOP_LESCAN);
         }
     }
 
@@ -113,19 +111,16 @@ public class BleModule implements Ble {
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int arg1, byte[] arg2) {
-            if (device.getName() == null || devices.contains(device)) {
+            if (device.getName() == null) {
                 return;
             }
             scanResultCallBack.scanResult(device);
-            devices.add(device);
         }
     };
 
     @Override
     public boolean connectBle(BluetoothDevice bluetoothDevice) {
         this.mBluetoothDevice = bluetoothDevice;
-        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-        mHandler.removeMessages(STOP_LESCAN);
         if (mBluetoothDevice == null) {
             return false;
         }
@@ -324,6 +319,7 @@ public class BleModule implements Ble {
             int pos = i * 2;
             d[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
         }
+        Log.i(TAG, "hexStringToBytes: " + d);
         return d;
     }
 
