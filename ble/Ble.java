@@ -1,5 +1,7 @@
 package com.weex.sample.extend.ble;
 
+import android.bluetooth.BluetoothDevice;
+
 /**
  * Created by Administrator on 2017/8/15.
  */
@@ -21,10 +23,9 @@ public interface Ble {
 
     /**
      * 开始扫描蓝牙设备
-     * @param bleName 设备名称
      * @param scanResultCallBack 扫描接口回调
      */
-    void startScanBle(String bleName, onBleScanResultCallBack scanResultCallBack);
+    void startScanBle(onBleScanResultCallBack scanResultCallBack);
 
     /**
      * 停止扫描
@@ -35,7 +36,7 @@ public interface Ble {
      * 连接设备
      * @return
      */
-    boolean connectBle();
+    boolean connectBle(BluetoothDevice bluetoothDevice);
 
     /**
      * 写数据

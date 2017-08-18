@@ -1,13 +1,14 @@
 package com.weex.sample.extend.ble;
 
+import android.bluetooth.BluetoothDevice;
+
 /**
  * Created by Administrator on 2017/8/15.
  */
 
 public interface onBleScanResultCallBack {
     /**
-     *1成功,0失败
-     * @return
+     * @return 扫描到的蓝牙设备  null--没有扫描到设备，扫描超时
      */
-    boolean scanResult(int state);
+    void scanResult(BluetoothDevice device);
 }

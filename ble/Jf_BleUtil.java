@@ -1,5 +1,6 @@
 package com.weex.sample.extend.ble;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import java.util.ArrayList;
@@ -37,8 +38,8 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     /**
      * 开始扫描
      */
-    public void startScan(String name, onBleScanResultCallBack scanResultCallBack) {
-        mBle.startScanBle(name, scanResultCallBack);
+    public void startScan(onBleScanResultCallBack scanResultCallBack) {
+        mBle.startScanBle(scanResultCallBack);
     }
 
     /**
@@ -51,8 +52,8 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     /**
      * 开始连接
      */
-    public boolean connectBle() {
-        return mBle.connectBle();
+    public boolean connectBle(BluetoothDevice bluetoothDevice) {
+        return mBle.connectBle(bluetoothDevice);
     }
 
     /**

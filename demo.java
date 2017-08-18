@@ -2,6 +2,7 @@ package com.weex.sample;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -46,7 +47,7 @@ public class BActivity extends Activity implements onBleScanResultCallBack, onRe
         Log.i(TAG, "onStart: 判断蓝牙是否打开");
         if(jf_bleUtil.checkBleOpen())
         {
-            jf_bleUtil.startScan("LanQian",this);
+            jf_bleUtil.startScan(this);
             Log.i(TAG, "onStart: 开始扫描蓝牙");
         }else{
             Intent mIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -60,24 +61,11 @@ public class BActivity extends Activity implements onBleScanResultCallBack, onRe
         if(requestCode == REQUEST_CODE)
         {
             if(requestCode == RESULT_OK)
-                jf_bleUtil.startScan("LanQian",this);
+                jf_bleUtil.startScan(this);
         }
     }
 
-    @Override
-    public boolean scanResult(int state) {
-        if(state == 1)
-        {
-            jf_bleUtil.stopScan();//停止扫描
-            if(jf_bleUtil.connectBle())//停止扫描
-            {
-                Log.i(TAG, "scanResult: 连接成功");
-                return true;
-            }
-        }
-        Log.i(TAG, "scanResult: 连接失败");
-        return false;
-    }
+
     
     private void sendMsg()
     {
@@ -100,5 +88,17 @@ public class BActivity extends Activity implements onBleScanResultCallBack, onRe
     @Override
     public void responseHistoryData(List<DeviceData> lists) {
         //这边处理历史压力和实时压力
+    }
+
+    @Override
+    public void scanResult(BluetoothDevice device) {
+        if(device != null)
+        {
+            if(device.getName().contains("LanQian"))
+            {
+                jf_bleUtil.stopScan();//停止扫描
+                jf_bleUtil.connectBle(device);//连接设备
+            }
+        }
     }
 }

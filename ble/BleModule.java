@@ -13,6 +13,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -23,7 +25,6 @@ public class BleModule implements Ble {
 
     private static String TAG = BleModule.class.getSimpleName();
     private boolean isScan = false;//扫描标记
-    private String bleName;//需要扫描的蓝牙名称
 
     private Context mContext;
     private BluetoothManager mBluetoothManager;
@@ -38,6 +39,8 @@ public class BleModule implements Ble {
     public static String REC_PKG_CHAR_UUID;     //接受数据要使用的characteristic的UUID
     public static String SEND_PKG_CHAR_UUID;    //SEND_PKG_CHAR_UUID
     public static String CLIENT_CHARACTERISTIC_CONFIG;   //设置蓝牙通知的UUID
+
+    private List<BluetoothDevice> devices = new ArrayList<>();//扫描到的蓝牙列表
 
     //回调
     //扫描结果
@@ -73,9 +76,9 @@ public class BleModule implements Ble {
     }
 
     @Override
-    public void startScanBle(String name, onBleScanResultCallBack scanResultCallBack) {
+    public void startScanBle(onBleScanResultCallBack scanResultCallBack) {
         isScan = true;
-        bleName = name;
+        devices.clear();
         this.scanResultCallBack = scanResultCallBack;
         mBluetoothAdapter.startLeScan(mLeScanCallback);
         mState = BluetoothState.SCANNING;
@@ -87,7 +90,7 @@ public class BleModule implements Ble {
             switch (msg.what) {
                 case STOP_LESCAN: {
                     isScan = false;
-                    scanResultCallBack.scanResult(0);
+                    scanResultCallBack.scanResult(null);
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     Log.i(TAG, "Scan time is up");
                 }
@@ -110,31 +113,25 @@ public class BleModule implements Ble {
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int arg1, byte[] arg2) {
-            if (device.getName() == null || bleName == null || bleName.equals("")) {
+            if (device.getName() == null || devices.contains(device)) {
                 return;
             }
-            if (device.getName().contains(bleName)) {    //判断是否搜索到你需要的ble设备
-                mBluetoothDevice = device;   //获取到周边设备
-                mBluetoothAdapter.stopLeScan(mLeScanCallback);   //1、当找到对应的设备后，立即停止扫描；2、不要循环搜索设备，为每次搜索设置适合的时间限制。避免设备不在可用范围的时候持续不停扫描，消耗电量。
-                mHandler.removeMessages(STOP_LESCAN);
-                scanResultCallBack.scanResult(1);
-            }
+            scanResultCallBack.scanResult(device);
+            devices.add(device);
         }
     };
 
     @Override
-    public boolean connectBle() {
+    public boolean connectBle(BluetoothDevice bluetoothDevice) {
+        this.mBluetoothDevice = bluetoothDevice;
+        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        mHandler.removeMessages(STOP_LESCAN);
         if (mBluetoothDevice == null) {
             return false;
         }
         mBluetoothGatt = mBluetoothDevice.connectGatt(mContext, false, mGattCallback);  //mGattCallback为回调接口
         if (mBluetoothGatt != null) {
-
-            if (mBluetoothGatt.connect()) {
-                return true;
-            } else {
-                return false;
-            }
+            return mBluetoothGatt.connect();
         } else {
             return false;
         }
@@ -165,13 +162,7 @@ public class BleModule implements Ble {
                 gatt.discoverServices(); //执行到这里其实蓝牙已经连接成功了
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mState = BluetoothState.DISCONNECTED;
-                if (mBluetoothDevice != null) {
-                    Log.i(TAG, "重新连接");
-                    closeBleConnect();
-                    connectBle();
-                } else {
-                    Log.i(TAG, "Disconnected from GATT server.");
-                }
+                closeBleConnect();
             }
         }
 
@@ -190,7 +181,6 @@ public class BleModule implements Ble {
             Log.d(TAG, "onCharacteristicRead------>" + bytesToHexString(characteristic.getValue()));
         }
 
-
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             byte[] value = characteristic.getValue();
@@ -199,7 +189,6 @@ public class BleModule implements Ble {
                 bleResponseCallBack.respose(bytesToBinary(characteristic.getValue()));
             }
         }
-
 
         //接受Characteristic被写的通知,收到蓝牙模块的数据后会触发onCharacteristicWrite
         @Override
@@ -229,7 +218,6 @@ public class BleModule implements Ble {
             }
         }
     }
-
 
     private BluetoothGattCharacteristic getCharcteristic(String serviceUUID, String characteristicUUID) {
         //得到服务对象
