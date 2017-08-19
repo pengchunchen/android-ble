@@ -40,6 +40,9 @@ public class BleModule implements Ble {
     public static String SEND_PKG_CHAR_UUID;    //SEND_PKG_CHAR_UUID
     public static String CLIENT_CHARACTERISTIC_CONFIG;   //设置蓝牙通知的UUID
 
+
+    private List<BluetoothDevice> deviceList = new ArrayList<>();
+
     //回调
     //扫描结果
     private onBleScanResultCallBack scanResultCallBack;
@@ -76,6 +79,7 @@ public class BleModule implements Ble {
     @Override
     public void startScanBle(onBleScanResultCallBack scanResultCallBack) {
         isScan = true;
+        deviceList.clear();
         this.scanResultCallBack = scanResultCallBack;
         mBluetoothAdapter.startLeScan(mLeScanCallback);
         mState = BluetoothState.SCANNING;
@@ -111,9 +115,10 @@ public class BleModule implements Ble {
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int arg1, byte[] arg2) {
-            if (device.getName() == null) {
+            if (device.getName() == null || deviceList.contains(device)) {
                 return;
             }
+            deviceList.add(device);
             scanResultCallBack.scanResult(device);
         }
     };
