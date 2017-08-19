@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface onResponseCallBack {
 
-    void response(int type,int data);
+    void response(int type,Object data);
 
     void responseHistoryData(List<DeviceData> lists);
 }

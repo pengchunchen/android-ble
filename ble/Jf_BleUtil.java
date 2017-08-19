@@ -23,7 +23,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     public Jf_BleUtil(Context context) {
         this.mContext = context;
         mBle = new BleModule(this.mContext);
-        mBle.setCharUUID("FFF0","FFF1","FFF1","2902");
+        mBle.setCharUUID("FFF0", "FFF1", "FFF1", "2902");
     }
 
     /**
@@ -90,6 +90,15 @@ public class Jf_BleUtil implements onBleResponseCallBack {
 
     /**
      * 写数据,带参数,用于设置蓝牙数据
+     * @param cmd 请求的协议号
+     * @param param BleCmd_SetDeviceTimeInterval：时间间隔/整数
+     *              BleCmd_SetDeviceSaveWord：保留字/字符串 如"BC000001"
+     *              BleCmd_SetDeviceSensorCount:传感器数量/整数
+     *              BleCmd_SetDeviceTime：时间/整数 若要设置为当前时间，传System.currentTimeMillis()/1000
+     *              BleCmd_ReadHistoryData:传那个传感器，这边是用16进制传值 如当前请求第四个传感器即1000，传值08
+     *              BleCmd_ReadCurrentData:当前请求第二和四个传感器即1010，传值0A
+     * @param callback
+     * @return
      */
     public boolean writeBle(int cmd, String param, onResponseCallBack callback) {
         this.callback = callback;
@@ -100,7 +109,10 @@ public class Jf_BleUtil implements onBleResponseCallBack {
                 content = "FE00060104" + intToHexString(param) + "00";
                 break;
             case BleCmdType.BleCmd_SetDeviceSaveWord:
-                content = "FE00060704" + intToHexString(param) + "00";
+                while (param.length() < 8) {
+                    param = "0" + param;
+                }
+                content = "FE00060704" + param + "00";
                 break;
             case BleCmdType.BleCmd_SetDeviceSensorCount:
                 content = "FE00060204" + intToHexString(param) + "00";
@@ -122,6 +134,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
 
     /**
      * 拼接历史数据请求
+     *
      * @param param 传感器编号  16进制
      * @return
      */
@@ -150,6 +163,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
 
     /**
      * 设备蓝牙数据回调
+     *
      * @param code 2进制字符串
      */
     @Override
@@ -169,7 +183,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
                     } else if (type.equals("00000100")) {
                         callback.response(BleCmdType.BleCmd_GetDeviceBattery, bitStringToInt(code.substring(40, 72)));
                     } else if (type.equals("00000111")) {
-                        callback.response(BleCmdType.BleCmd_GetDeviceSaveWord, bitStringToInt(code.substring(40, 72)));
+                        callback.response(BleCmdType.BleCmd_GetDeviceSaveWord, binaryToHex(code.substring(40, 72)));
                     }
                 } else if (funcCodeString.equals("00000111")) {
                     callback.response(mSetBleCmd, 0);
@@ -221,7 +235,8 @@ public class Jf_BleUtil implements onBleResponseCallBack {
 
     /**
      * 解析历史数据字符串
-     * @param data 字符串
+     *
+     * @param data      字符串
      * @param dataCount 数据个数
      * @return
      */
@@ -278,5 +293,18 @@ public class Jf_BleUtil implements onBleResponseCallBack {
             hexString = "0" + hexString;
         }
         return hexString;
+    }
+
+    /**
+     * 2进制转16进制
+     * @param value
+     * @return
+     */
+    private String binaryToHex(String value) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            sb.append(Integer.toHexString(Integer.parseInt(value.substring(4 * i, 4 * (i + 1)), 2)));
+        }
+        return sb.toString();
     }
 }
