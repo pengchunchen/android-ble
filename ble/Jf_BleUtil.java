@@ -189,7 +189,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
                     callback.response(mSetBleCmd, 0);
                 } else if (funcCodeString.equals("00000101")) {
                     int dataLength = bitStringToInt(code.substring(32, 40));
-                    int dataCount = dataLength / 5;
+                    int dataCount = (dataLength - 4) / 5;
                     List<DeviceData> deviceDataLists = new ArrayList<>();
                     DeviceData deviceData = new DeviceData();
                     deviceData.historyDatas = parseData(code, dataCount);
