@@ -6,9 +6,9 @@ package com.weex.sample.extend.ble;
 
 public class HistoryData {
     //通道号
-    int channelNumber;
+    public int channelNumber;
     //压力值
-    int pressure;
+    public int pressure;
     //传感器状态
-    int pressureState;
+    public int pressureState;
 }

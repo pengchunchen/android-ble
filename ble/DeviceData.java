@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DeviceData {
     //历史数据集合
-    List<HistoryData> historyDatas;
-    //数据产生的时间
-    int time;
+    public List<HistoryData> historyDatas;
+    //数据产生的时间,秒
+    public int time;
 }
