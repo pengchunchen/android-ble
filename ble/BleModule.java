@@ -83,7 +83,7 @@ public class BleModule implements Ble {
         this.scanResultCallBack = scanResultCallBack;
         mBluetoothAdapter.startLeScan(mLeScanCallback);
         mState = BluetoothState.SCANNING;
-        mHandler.sendEmptyMessageDelayed(STOP_LESCAN, 15 * 1000);  //这个搜索10秒，如果搜索不到则停止搜索
+        mHandler.sendEmptyMessageDelayed(STOP_LESCAN, 10 * 1000);  //这个搜索10秒，如果搜索不到则停止搜索
     }
 
     private Handler mHandler = new Handler() {

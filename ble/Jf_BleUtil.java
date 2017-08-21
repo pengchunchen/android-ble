@@ -19,8 +19,7 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     private boolean isReadHistory = false;//是否在读历史数据
     private int readHistoryCount;//读取历史数据请求的传感器个数
     private String historyResultString;//历史数据
-    
-    
+
     private static Jf_BleUtil mJf_BleUtil = null;
     public static Jf_BleUtil getInstance(Context context){
      synchronized(Jf_BleUtil.class){

@@ -70,7 +70,7 @@ public class BActivity extends Activity implements onBleScanResultCallBack, onRe
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_CODE)
         {
-            if(requestCode == RESULT_OK)
+            if(resultCode == RESULT_OK)
                 Jf_BleUtil.getInstance(this).startScan(this);
         }
     }
