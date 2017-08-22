@@ -48,6 +48,8 @@ public class BleModule implements Ble {
     private onBleScanResultCallBack scanResultCallBack;
     //返回回调
     private onBleResponseCallBack bleResponseCallBack;
+    //连接成功回调
+    private onConnectResultCallBack connectResultCallBack;
 
     public BleModule(Context context) {
         this.mContext = context;
@@ -124,8 +126,9 @@ public class BleModule implements Ble {
     };
 
     @Override
-    public boolean connectBle(BluetoothDevice bluetoothDevice) {
+    public boolean connectBle(BluetoothDevice bluetoothDevice,onConnectResultCallBack connectResultCallBack) {
         this.mBluetoothDevice = bluetoothDevice;
+        this.connectResultCallBack = connectResultCallBack;
         if (mBluetoothDevice == null) {
             return false;
         }
@@ -171,6 +174,7 @@ public class BleModule implements Ble {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "onServicesDiscovered");
                 openBLEDataIn(); //打开BLE设备的 notify 通道
+                connectResultCallBack.success();
             } else {
                 Log.i(TAG, "onServicesDiscovered status------>" + status);
             }

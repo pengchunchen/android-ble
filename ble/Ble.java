@@ -36,7 +36,7 @@ public interface Ble {
      * 连接设备
      * @return
      */
-    boolean connectBle(BluetoothDevice bluetoothDevice);
+    boolean connectBle(BluetoothDevice bluetoothDevice,onConnectResultCallBack onConnectResultCallBack);
 
     /**
      * 写数据

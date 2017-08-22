@@ -63,8 +63,8 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     /**
      * 开始连接
      */
-    public boolean connectBle(BluetoothDevice bluetoothDevice) {
-        return mBle.connectBle(bluetoothDevice);
+    public boolean connectBle(BluetoothDevice bluetoothDevice,onConnectResultCallBack connectResultCallBack) {
+        return mBle.connectBle(bluetoothDevice,connectResultCallBack);
     }
 
     /**
