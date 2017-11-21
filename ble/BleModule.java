@@ -1,4 +1,4 @@
-package com.weex.sample.extend.ble;
+package com.android.livedemo.ble;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -33,7 +33,7 @@ public class BleModule implements Ble {
     private BluetoothGatt mBluetoothGatt;
 
     private final int STOP_LESCAN = 0x1;
-    public static BluetoothState mState = BluetoothState.UNKNOWN;
+    public static BleState mState = BleState.UNKNOWN;
 
     public static String DATA_SERVICE_UUID;     //血压计提供的SERVICE
     public static String REC_PKG_CHAR_UUID;     //接受数据要使用的characteristic的UUID
@@ -68,10 +68,12 @@ public class BleModule implements Ble {
     }
 
     @Override
-    public boolean checkBleOpen() {
+    public boolean checkBleOpen(onConnectResultCallBack connectResultCallBack) {
+        this.connectResultCallBack = connectResultCallBack;
         if (mBluetoothAdapter != null) {
             if (!mBluetoothAdapter.isEnabled()) {
-                mState = BluetoothState.BLUETOOTH_OFF;
+                mState = BleState.BLUETOOTH_OFF;
+                connectResultCallBack.bleState(mState);
                 return false;
             }
         }
@@ -83,8 +85,10 @@ public class BleModule implements Ble {
         isScan = true;
         deviceList.clear();
         this.scanResultCallBack = scanResultCallBack;
+
         mBluetoothAdapter.startLeScan(mLeScanCallback);
-        mState = BluetoothState.SCANNING;
+        mState = BleState.SCANNING;
+        connectResultCallBack.bleState(mState);
         mHandler.sendEmptyMessageDelayed(STOP_LESCAN, 10 * 1000);  //这个搜索10秒，如果搜索不到则停止搜索
     }
 
@@ -126,9 +130,8 @@ public class BleModule implements Ble {
     };
 
     @Override
-    public boolean connectBle(BluetoothDevice bluetoothDevice,onConnectResultCallBack connectResultCallBack) {
+    public boolean connectBle(BluetoothDevice bluetoothDevice) {
         this.mBluetoothDevice = bluetoothDevice;
-        this.connectResultCallBack = connectResultCallBack;
         if (mBluetoothDevice == null) {
             return false;
         }
@@ -161,10 +164,11 @@ public class BleModule implements Ble {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                mState = BluetoothState.CONNECTED;
+                mState = BleState.CONNECTED;
                 gatt.discoverServices(); //执行到这里其实蓝牙已经连接成功了
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                mState = BluetoothState.DISCONNECTED;
+                mState = BleState.DISCONNECTED;
+                connectResultCallBack.bleState(BleState.DISCONNECTED);
                 closeBleConnect();
             }
         }
@@ -174,7 +178,7 @@ public class BleModule implements Ble {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "onServicesDiscovered");
                 openBLEDataIn(); //打开BLE设备的 notify 通道
-                connectResultCallBack.success();
+                connectResultCallBack.bleState(BleState.CONNECTED);
             } else {
                 Log.i(TAG, "onServicesDiscovered status------>" + status);
             }
@@ -297,19 +301,25 @@ public class BleModule implements Ble {
     }
 
     @Override
-    public int getBleState() {
-        return mState == BluetoothState.CONNECTED ? 1 : 0;
+    public boolean reConnectBle() {
+        if(closeBleConnect())
+        {
+            if (mBluetoothDevice == null) {
+                return false;
+            }
+            mBluetoothGatt = mBluetoothDevice.connectGatt(mContext, false, mGattCallback);  //mGattCallback为回调接口
+            if (mBluetoothGatt != null) {
+                return mBluetoothGatt.connect();
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
-    public enum BluetoothState {
-        UNKNOWN,
-        IDLE,
-        SCANNING,
-        BLUETOOTH_OFF,
-        CONNECTING,
-        CONNECTED,
-        DISCONNECTING,
-        DISCONNECTED
+    @Override
+    public int getBleState() {
+        return mState == BleState.CONNECTED ? 1 : 0;
     }
 
     private byte charToByte(char c) {

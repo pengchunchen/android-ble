@@ -1,4 +1,4 @@
-package com.weex.sample.extend.ble;
+package com.android.livedemo.ble;
 
 import android.bluetooth.BluetoothDevice;
 
@@ -14,12 +14,12 @@ public interface Ble {
      * @param sendID
      * @param notifyID
      */
-    void setCharUUID(String serviceID,String recID,String sendID,String notifyID);
+    void setCharUUID(String serviceID, String recID, String sendID, String notifyID);
     /**
      * 检测手机蓝牙是否打开
      * @return true打开 false调用者自行开启
      */
-    boolean checkBleOpen();
+    boolean checkBleOpen(onConnectResultCallBack onConnectResultCallBack);
 
     /**
      * 开始扫描蓝牙设备
@@ -36,7 +36,7 @@ public interface Ble {
      * 连接设备
      * @return
      */
-    boolean connectBle(BluetoothDevice bluetoothDevice,onConnectResultCallBack onConnectResultCallBack);
+    boolean connectBle(BluetoothDevice bluetoothDevice);
 
     /**
      * 写数据
@@ -47,10 +47,16 @@ public interface Ble {
     boolean writeBle(String cmd, onBleResponseCallBack responseCallBack);
 
     /**
-     * 断开蓝牙连接
+     * 主动断开蓝牙连接
      * @return true断开成功
      */
     boolean closeBleConnect();
+
+    /**
+     * 被动断开后主动重连
+     * @return true重连成功
+     */
+    boolean reConnectBle();
 
     /**
      * 获取蓝牙连接状态

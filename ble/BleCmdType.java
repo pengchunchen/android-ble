@@ -1,4 +1,4 @@
-package com.weex.sample.extend.ble;
+package com.android.livedemo.ble;
 
 /**
  * Created by Administrator on 2017/8/16.

@@ -1,4 +1,4 @@
-package com.weex.sample.extend.ble;
+package com.android.livedemo.ble;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -42,8 +42,8 @@ public class Jf_BleUtil implements onBleResponseCallBack {
      *
      * @return
      */
-    public boolean checkBleOpen() {
-        return mBle.checkBleOpen();
+    public boolean checkBleOpen(onConnectResultCallBack connectResultCallBack) {
+        return mBle.checkBleOpen(connectResultCallBack);
     }
 
     /**
@@ -63,8 +63,8 @@ public class Jf_BleUtil implements onBleResponseCallBack {
     /**
      * 开始连接
      */
-    public boolean connectBle(BluetoothDevice bluetoothDevice,onConnectResultCallBack connectResultCallBack) {
-        return mBle.connectBle(bluetoothDevice,connectResultCallBack);
+    public boolean connectBle(BluetoothDevice bluetoothDevice) {
+        return mBle.connectBle(bluetoothDevice);
     }
 
     /**

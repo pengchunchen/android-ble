@@ -1,4 +1,4 @@
-package com.weex.sample.extend.ble;
+package com.android.livedemo.ble;
 
 import android.bluetooth.BluetoothDevice;
 

@@ -1,4 +1,4 @@
-package com.weex.sample.extend.ble;
+package com.android.livedemo.ble;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface onResponseCallBack {
 
-    void response(int type,Object data);
+    void response(int type, Object data);
 
     void responseHistoryData(List<DeviceData> lists);
 }
